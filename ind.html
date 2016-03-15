@@ -63,35 +63,81 @@ WebVRConfig = {
 };
 </script>
 
+<!--
+  A polyfill for Promises. Needed for IE and Edge.
+  -->
 <script src="node_modules/es6-promise/dist/es6-promise.js"></script>
+
+<!--
+  three.js 3d library
+  -->
 <script src="node_modules/three/three.min.js"></script>
-<script src="lib/Noise.js"></script>
 
-<script src="lib/TREE.js"></script>
-
-<script src="script/sc1.js"></script>
+<!--
+  VRControls.js acquires positional information from connected VR devices and applies the transformations to a three.js camera object.
+   -->
 <script src="node_modules/three/examples/js/controls/VRControls.js"></script>
+
+<!--
+  VREffect.js handles stereo camera setup and rendering.
+  -->
 <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
+
+<!--
+  A polyfill for WebVR using the Device{Motion,Orientation}Event API.
+  -->
 <script src="node_modules/webvr-polyfill/build/webvr-polyfill.js"></script>
+
+<!--
+  Helps enter and exit VR mode, provides best practices while in VR.
+  -->
 <script src="build/webvr-manager.js"></script>
 
 
 <script>
-
+// Setup three.js WebGL renderer. Note: Antialiasing is a big performance hit.
+// Only enable it if you actually need to.
 var renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setPixelRatio(window.devicePixelRatio);
 
+// Append the canvas element created by the renderer to document body element.
 document.body.appendChild(renderer.domElement);
 
+// Create a three.js scene.
 var scene = new THREE.Scene();
+
+// Create a three.js camera.
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+
+// Apply VR headset positional data to camera.
 var controls = new THREE.VRControls(camera);
+
+// Apply VR stereo rendering to renderer.
 var effect = new THREE.VREffect(renderer);
 effect.setSize(window.innerWidth, window.innerHeight);
 
 
-sc1.setup();
-// print(noise(1,2,3));
+// Add a repeating grid as a skybox.
+var boxWidth = 5;
+var loader = new THREE.TextureLoader();
+loader.load('img/box.png', onTextureLoaded);
+
+function onTextureLoaded(texture) {
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(boxWidth, boxWidth);
+
+  var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
+  var material = new THREE.MeshBasicMaterial({
+    map: texture,
+    color: 0x01BE00,
+    side: THREE.BackSide
+  });
+
+  var skybox = new THREE.Mesh(geometry, material);
+  scene.add(skybox);
+}
+
 
 // Create a VR manager helper to enter and exit VR mode.
 var params = {
@@ -100,15 +146,19 @@ var params = {
 };
 var manager = new WebVRManager(renderer, effect, params);
 
+// Create 3D objects.
 var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 var material = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh(geometry, material);
+
+// Position cube mesh
 cube.position.z = -1;
+
+
+// Add cube mesh to your three.js scene
 scene.add(cube);
 
-var light = new THREE.DirectionalLight( 0xffffff, 1 );
-scene.add(light);
-
+// Request animation frame loop function
 var lastRender = 0;
 function animate(timestamp) {
   var delta = Math.min(timestamp - lastRender, 500);
@@ -124,11 +174,12 @@ function animate(timestamp) {
   manager.render(scene, camera, timestamp);
 
   requestAnimationFrame(animate);
-  sc1.draw(lastRender*.001);
 }
 
+// Kick off animation loop
 animate(performance ? performance.now() : Date.now());
 
+// Reset the position sensor when 'z' pressed.
 function onKey(event) {
   if (event.keyCode == 90) { // z
     controls.resetSensor();
