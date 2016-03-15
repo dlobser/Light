@@ -76,6 +76,6 @@ function addToLines(pos){
     lineCount++;
     if(lineCount>lines.length-1)
         lineCount=0;
-    var spline = new THREE.SplineCurve3(lines[lineCount]);
+    var spline = new THREE.CatmullRomCurve3(lines[lineCount]);
     tube.update(spline,lineCount);
 }
