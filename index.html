@@ -65,9 +65,11 @@ WebVRConfig = {
 
 <script src="node_modules/es6-promise/dist/es6-promise.js"></script>
 <script src="node_modules/three/three.min.js"></script>
+
 <script src="lib/Noise.js"></script>
 
 <script src="lib/TREE.js"></script>
+<script src="lib/SkinTube.js"></script>
 
 <script src="script/sc1.js"></script>
 <script src="node_modules/three/examples/js/controls/VRControls.js"></script>
@@ -104,9 +106,9 @@ var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 var material = new THREE.MeshNormalMaterial();
 var cube = new THREE.Mesh(geometry, material);
 cube.position.z = -1;
-scene.add(cube);
+// scene.add(cube);
 
-var light = new THREE.DirectionalLight( 0xffffff, 1 );
+var light = new THREE.DirectionalLight( 0xffffff, 3 );
 scene.add(light);
 
 var lastRender = 0;
