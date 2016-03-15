@@ -2,16 +2,18 @@ sc1 = {
     
     setup:function(){
 
-        tube = new skinTube();
-        scene.add(tube.init(3));
+        tube = new skinTube({heightSegs:100});
+        scene.add(tube.init(6));
         initLines();
+
+
 
         tree = new TREE();
         
-        tree.generate({joints:[5],angles:[1],rads:[3],length:[9]});
+        tree.generate({joints:[8],angles:[1],rads:[6],length:[9]});
         
         tree.scale = new THREE.Vector3(.1,.1,.1);
-        tree.position.z = -35;
+        tree.position.z = -25;
         scene.add(tree);
         
         // tree.position.y = -30;
@@ -22,6 +24,25 @@ sc1 = {
             [0,-1,-2],   {ballGeo:new THREE.Geometry(),jointGeo:new THREE.Geometry()},
             // [0,-1,-1,-1,-2],  {sc:1+(3*.2),rx:2,jOffset:1,jOff:count*3*-.1,jFreq:1,jMult:2}
         ]),tree.setGeo)
+
+          tree.passFunc(tree.makeInfo([
+            [0,-1,-2],   {rx:count,rz:4*.1,jFreq:.6,jMult:.4,jFract:.51,jOff:0*5,sc:.98},
+            // [0,-1,-1,-1,-2],  {sc:1+(3*.2),rx:2,jOffset:1,jOff:count*3*-.1,jFreq:1,jMult:2}
+        ]),tree.transform)
+
+        for(var i = 0 ; i < 100 ; i++){
+         tree.passFunc(tree.makeInfo([
+            [0,-1,-3],   {},
+            // [0,-1,-1,-1,-2],  {sc:1+(3*.2),rx:2,jOffset:1,jOff:count*3*-.1,jFreq:1,jMult:2}
+        ]),function(obj){
+            scene.updateMatrixWorld();
+            obj.parent.updateMatrixWorld();
+            var vector = new THREE.Vector3();
+            vector.setFromMatrixPosition( obj.matrixWorld );
+            addToLines(vector);
+            // console.log(vector);
+        })
+     }
 
         // setSliders({"var1":0,"var2":0,"var3":.6,"var4":.4,"var5":.2,"var6":.4,"var7":.3})
         
@@ -55,7 +76,7 @@ sc1 = {
 function initLines(){
    lineCount = 0;
    lines = [];
-   for(var i = 0 ; i < 3 ; i++){
+   for(var i = 0 ; i < 6 ; i++){
 
     lines.push([]);
    }
@@ -63,6 +84,10 @@ function initLines(){
         lines[0].push(new THREE.Vector3());
         lines[1].push(new THREE.Vector3());
         lines[2].push(new THREE.Vector3());
+
+        lines[3].push(new THREE.Vector3());
+        lines[4].push(new THREE.Vector3());
+        lines[5].push(new THREE.Vector3());
 
     }
 }
