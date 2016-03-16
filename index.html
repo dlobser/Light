@@ -92,10 +92,26 @@ var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 var controls = new THREE.VRControls(camera);
 var effect = new THREE.VREffect(renderer);
+effect.scale = new THREE.Vector3(5,5,5);
 effect.setSize(window.innerWidth, window.innerHeight);
 
 
-sc1.setup();
+
+var loader = new THREE.TextureLoader();
+var texture = loader.load('img/burst.png', onTextureLoaded);
+var skyTexture = loader.load('img/sky_2.jpg', onTextureLoaded);
+
+var loading = 0;
+
+function onTextureLoaded(texture) {
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  loading++;
+  if(loading>1)
+    sc1.setup();
+}
+
+
 // print(noise(1,2,3));
 
 // Create a VR manager helper to enter and exit VR mode.
