@@ -72,10 +72,16 @@ WebVRConfig = {
 <script src="lib/SkinTube.js"></script>
 <script src="lib/shaders.js"></script>
 
+<script src="node_modules/three/examples/js/curves/NURBSCurve.js"></script>
+<script src="node_modules/three/examples/js/curves/NURBSSurface.js"></script>
+<script src="node_modules/three/examples/js/curves/NURBSUtils.js"></script>
+
 <!-- <script src="script/sc1.js"></script> -->
-<script src="lib/sc2.js"></script>
+<script src="lib/sc3.js"></script>
 
 <script src="node_modules/three/examples/js/controls/VRControls.js"></script>
+<script src="node_modules/three/examples/js/loaders/OBJLoader.js"></script>
+
 <script src="node_modules/three/examples/js/effects/VREffect.js"></script>
 <script src="node_modules/webvr-polyfill/build/webvr-polyfill.js"></script>
 <script src="build/webvr-manager.js"></script>
@@ -98,17 +104,44 @@ effect.setSize(window.innerWidth, window.innerHeight);
 
 
 var loader = new THREE.TextureLoader();
-var texture = loader.load('img/burst.png', onTextureLoaded);
-var skyTexture = loader.load('img/sky_2.jpg', onTextureLoaded);
-
+var texture = loader.load('img/paintStreak_02.png', onTextureLoaded);
+var skyTexture = loader.load('img/burst.png', onTextureLoaded);
+var swirl;
 var loading = 0;
+var loaded = false;
 
 function onTextureLoaded(texture) {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   loading++;
-  if(loading>1)
+  if(loading>1){
+    // setupModel();
+        sc1.setup();
+
+    
+  }
+}
+
+function setupModel(){
+  var loader = new THREE.OBJLoader( manager );
+  loader.load( 'obj/curveTest.obj', function ( object ) {
+
+    // object.traverse( function ( child ) {
+
+    //   if ( child instanceof THREE.Mesh ) {
+
+    //     child.material.map = texture;
+
+    //   }
+
+    // } );
+    object.material = new THREE.MeshBasicMaterial( );
+    console.log("p888888999999");
+    object.position.z = - 1;
+    // scene.add( object );
+    swirl = object.children[0];
     sc1.setup();
+  } );
 }
 
 
@@ -145,6 +178,7 @@ function animate(timestamp) {
   manager.render(scene, camera, timestamp);
 
   requestAnimationFrame(animate);
+  if(loaded)
   sc1.draw(lastRender*.001);
 }
 
